@@ -630,6 +630,7 @@ fn game_format(game: Game, language: LanguageKey, emitter: &RootEmitter) -> Resu
         => Err(emitter.emit(error!("{} does not have ending MSG files", game))),
         
         | (Game::Th06, LanguageKey::End)
+        | (Game::Th06NC, LanguageKey::End)
         | (Game::Th07, LanguageKey::End)
         | (Game::Th08, LanguageKey::End)
         | (Game::Th09, LanguageKey::End)
@@ -657,7 +658,7 @@ impl FileFormat {
 
     fn language_hooks(&self) -> Box<dyn LanguageHooks> {
         match self.game {
-            | Game::Th06 | Game::Th07 | Game::Th08
+            | Game::Th06 | Game::Th06NC | Game::Th07 | Game::Th08
             | Game::Th09 | Game::Th10 | Game::Th11
             | Game::Th12 | Game::Th125 | Game::Th128
             | Game::Th13 | Game::Th14 | Game::Th143

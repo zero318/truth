@@ -4,7 +4,7 @@ use crate::diagnostic::Diagnostic;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Game {
-    Th06, Th07, Th08, Th09, Th095, Th10, Alcostg, Th11, Th12,
+    Th06, Th06NC, Th07, Th08, Th09, Th095, Th10, Alcostg, Th11, Th12,
     Th125, Th128, Th13, Th14, Th143, Th15, Th16, Th165, Th17, Th18,
     Th185, Th19, Th20
 }
@@ -29,6 +29,7 @@ impl std::str::FromStr for Game {
             1 | 2 | 3 | 4 | 5 => Err(unsupported_pc98()),
             75 | 105 | 135 | 145 | 155 | 175 => Err(unsupported_fighter()),
             6 => Ok(Game::Th06),
+            61 => Ok(Game::Th06NC),
             7 => Ok(Game::Th07),
             8 => Ok(Game::Th08),
             9 => Ok(Game::Th09),
@@ -60,6 +61,7 @@ impl Game {
         match self {
             Game::Alcostg => "AlcoSTG",
             Game::Th06 => "EoSD",
+            Game::Th06NC => "EoSDNC",
             Game::Th07 => "PCB",
             Game::Th08 => "IN",
             Game::Th09 => "PoFV",
@@ -87,6 +89,7 @@ impl Game {
         match self {
             Game::Alcostg => "alcostg",
             Game::Th06 => "th06",
+            Game::Th06NC => "th06nc",
             Game::Th07 => "th07",
             Game::Th08 => "th08",
             Game::Th09 => "th09",
@@ -114,6 +117,7 @@ impl Game {
         match self {
             Game::Alcostg => 103,
             Game::Th06 => 6,
+            Game::Th06NC => 61,
             Game::Th07 => 7,
             Game::Th08 => 8,
             Game::Th09 => 9,

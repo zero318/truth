@@ -6,7 +6,7 @@ pub(super) fn core_signatures(game: Game) -> &'static CoreSignatures {
         | Th095 | Alcostg | Th125 | Th143 | Th165 | Th185
         => EMPTY,
 
-        | Th06 | Th07 | Th08 | Th09
+        | Th06 | Th06NC | Th07 | Th08 | Th09
         => END_06_09,
 
         | Th10 | Th11 | Th12 | Th128 | Th13

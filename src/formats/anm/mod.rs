@@ -1209,7 +1209,7 @@ impl Version {
     fn from_game(game: Game) -> Self {
         use Game::*;
         match game {
-            Th06 => Version::V0,
+            Th06 | Th06NC => Version::V0,
             Th07 => Version::V2,
             Th08 | Th09 => Version::V3,
             Th095 | Th10 | Alcostg => Version::V4,

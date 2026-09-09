@@ -6,7 +6,7 @@ pub(super) fn core_signatures(game: Game) -> &'static CoreSignatures {
         | Th095 | Alcostg
         => EMPTY,
 
-        | Th06 | Th07 | Th08 | Th09
+        | Th06 | Th06NC | Th07 | Th08 | Th09
         => MSG_06_09,
 
         | Th10 | Th11 | Th12 | Th125 | Th128 | Th13
@@ -40,7 +40,7 @@ static MSG_06_09: &CoreSignatures = &CoreSignatures {
         (Th06, 12, Some(("", None))),
         (Th06, 13, Some((r#"b(enum="bool")---"#, None))),
 
-        (Th07, 14, Some(("", None))),
+        (Th06NC, 14, Some(("", None))), // Different instruction in NC and PCB
 
         (Th08, 3, Some(("ssm(bs=4;mask=0x77,0,0)", None))),
         (Th08, 8, Some(("ssm(bs=4;mask=0x77,0,0)", None))),

@@ -8,7 +8,7 @@ use crate::value::ScalarType as Ty;
 
 pub(super) fn core_signatures(game: Game) -> &'static CoreSignatures {
     match game {
-        Th06 => ECL_06,
+        Th06 | Th06NC => ECL_06,
         Th07 => ECL_07,
         Th08 | Th09 => ECL_08_09,
         Th095 => ECL_095,
@@ -22,7 +22,7 @@ pub(super) fn core_signatures(game: Game) -> &'static CoreSignatures {
 
 pub(super) fn timeline_core_signatures(game: Game) -> &'static CoreSignatures {
     match game {
-        Th06 | Th07 | Th08 | Th09 | Th095 => TIMELINE,
+        Th06 | Th06NC | Th07 | Th08 | Th09 | Th095 => TIMELINE,
 
         Th10 | Alcostg | Th11 | Th12 | Th125 | Th128 |
         Th13 | Th14 | Th143 | Th15 | Th16 | Th165 | Th17 | Th18 | Th185 | Th19 | Th20 => CoreSignatures::EMPTY,
@@ -45,12 +45,14 @@ static TIMELINE: &'static CoreSignatures = &CoreSignatures {
         (Th06, 10, Some(("SS", None))),
         (Th06, 11, Some(("u(arg0)", None))),
         (Th06, 12, Some(("s(arg0)", None))),
+        (Th06NC, 14, Some(("", None))), // New classic NOP
 
         (Th07, 0, Some((r#"s(arg0;enum="EclSub")fffSSS"#, None))),
         (Th07, 2, Some((r#"s(arg0;enum="EclSub")fffSSS"#, None))),
         (Th07, 4, Some((r#"s(arg0;enum="EclSub")fffSSS"#, None))),
         (Th07, 6, Some((r#"s(arg0;enum="EclSub")fffSSS"#, None))),
         (Th07, 11, Some(("s(arg0)", None))),
+        (Th07, 14, None),
 
         (Th08, 0, Some(("EffSSS", None))),
         (Th08, 1, Some(("EffSSS", None))),
@@ -224,6 +226,8 @@ static ECL_06: &'static CoreSignatures = &CoreSignatures {
         (Th06, 133, Some(("", None))),
         (Th06, 134, Some(("", None))),
         (Th06, 135, Some((r#"b(imm;enum="bool")---"#, None))), // zero: b(imm;enum="BitBool")---
+        (Th06NC, 200, Some(("fff", None))),
+        (Th06NC, 201, Some(("s(imm)sSSffffU(imm;hex)", None))),
     ],
     var: &[
         (Th06, -10001, Some("$")),
@@ -251,6 +255,8 @@ static ECL_06: &'static CoreSignatures = &CoreSignatures {
         (Th06, -10023, Some("%")),
         (Th06, -10024, Some("$")),
         (Th06, -10025, Some("$")),
+        (Th06NC, -10100, Some("%")),
+        (Th06NC, -10101, Some("%")),
     ],
 };
 

@@ -8,7 +8,7 @@ use crate::value::ScalarType as Ty;
 
 pub(super) fn core_signatures(game: Game) -> &'static CoreSignatures {
     match game {
-        Th06 => {
+        Th06 | Th06NC => {
             static OUT: &CoreSignatures = &CoreSignatures {
                 inherit: &[ANM_INS_06, ANM_VAR],
                 ins: &[], var: &[],
@@ -78,6 +78,10 @@ static ANM_INS_06: &'static CoreSignatures = &CoreSignatures {
         (Th06, 29, Some((r#"U(enum="bool")"#, None))), // zero: U(enum="BitBool")
         (Th06, 30, Some(("ffs--", None))),
         (Th06, 31, Some((r#"U(enum="bool")"#, None))), // zero: U(enum="BitBool")
+        (Th06NC, 32, Some(("", None))),
+        (Th06NC, 33, Some(("", None))),
+        (Th06NC, 34, Some(("", None))),
+        (Th06NC, 35, Some(("", None))),
     ],
     var: &[],
 };

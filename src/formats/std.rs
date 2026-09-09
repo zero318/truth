@@ -646,7 +646,7 @@ fn game_format(game: Game) -> Box<dyn FileFormat> {
         Box::new(FileFormat10 { hooks, game })
     } else {
         let has_strips = match game {
-            Game::Th06 | Game::Th07 => false,
+            Game::Th06 | Game::Th06NC | Game::Th07 => false,
             Game::Th08 | Game::Th09 => true,
             _ => unreachable!(),
         };

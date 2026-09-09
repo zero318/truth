@@ -599,7 +599,7 @@ struct PcbSubFormat { game: Game }
 
 fn game_sub_format(game: Game) -> Box<dyn OldeSubFormat> {
     match game {
-        Game::Th06
+        Game::Th06 | Game::Th06NC
             => Box::new(EosdSubFormat { game }),
 
         Game::Th07 | Game::Th08 | Game::Th09 | Game::Th095
@@ -888,7 +888,7 @@ impl OldeRaiseSub {
 
 fn game_format(game: Game) -> Result<OldeFileFormat, ErrorReported> {
     match game {
-        | Game::Th06 | Game::Th07 | Game::Th08 | Game::Th09 | Game::Th095
+        | Game::Th06 | Game::Th06NC | Game::Th07 | Game::Th08 | Game::Th09 | Game::Th095
         => Ok(OldeFileFormat::new(game)),
 
         _ => unimplemented!("game {game} not yet supported"),
@@ -931,7 +931,7 @@ impl OldeFileFormat {
         assert!(game < Game::Th10);
         let ecl_hooks = Box::new(OldeEclHooks { game });
         let timeline_hooks = Box::new(TimelineHooks { format: match game {
-            Game::Th06 | Game::Th07 => Box::new(TimelineFormat06),
+            Game::Th06 | Game::Th06NC | Game::Th07 => Box::new(TimelineFormat06),
             _ => Box::new(TimelineFormat08),
         }});
         Self { game, ecl_hooks, timeline_hooks }
@@ -939,7 +939,7 @@ impl OldeFileFormat {
 
     fn magic(&self) -> Option<u32> {
         match self.game {
-            | Game::Th06 | Game::Th07 => None,
+            | Game::Th06 | Game::Th06NC | Game::Th07 => None,
             | Game::Th08 | Game::Th095 => Some(0x00_00_08_00),
             | Game::Th09 => Some(0x00_00_09_00),
             _ => unimplemented!("game not yet supported"),
@@ -948,7 +948,7 @@ impl OldeFileFormat {
 
     fn timeline_array_kind(&self) -> TimelineArrayKind {
         match self.game {
-            | Game::Th06 => TimelineArrayKind::Eosd { cap: 3 },
+            | Game::Th06 | Game::Th06NC => TimelineArrayKind::Eosd { cap: 3 },
 
             | Game::Th07 | Game::Th08 | Game::Th095
             => TimelineArrayKind::Pcb { cap: 16 },
@@ -982,17 +982,18 @@ impl LanguageHooks for OldeEclHooks {
     }
 
     fn register_style(&self) -> RegisterEncodingStyle {
-        if self.game == Game::Th06 {
-            RegisterEncodingStyle::EosdEcl { does_value_look_like_a_register: |value| {
-                let id = match *value {
-                    ScalarValue::Int(x) => x,
-                    ScalarValue::Float(x) => x as i32,
-                    ScalarValue::String(_) => return false,
-                };
-                -10_025 <= id && id <= -10_001
-            }}
-        } else {
-            RegisterEncodingStyle::ByParamMask
+        match self.game {
+            Game::Th06 | Game::Th06NC => {
+                RegisterEncodingStyle::EosdEcl { does_value_look_like_a_register: |value| {
+                    let id = match *value {
+                        ScalarValue::Int(x) => x,
+                        ScalarValue::Float(x) => x as i32,
+                        ScalarValue::String(_) => return false,
+                    };
+                    -10_101 <= id && id <= -10_001 // -10025 original game max var, -10101 new classic max var
+                }}
+            }
+            _ => RegisterEncodingStyle::ByParamMask
         }
     }
 
@@ -1000,7 +1001,7 @@ impl LanguageHooks for OldeEclHooks {
         use RegId as R;
 
         match self.game {
-            Game::Th06 => enum_map::enum_map!{
+            Game::Th06 | Game::Th06NC => enum_map::enum_map!{
                 ScalarType::Int => vec![
                     R(-10001), R(-10002), R(-10003), R(-10004), // I0-I3
                     R(-10009), R(-10010), R(-10011), R(-10012), // IC0-IC3
@@ -1064,6 +1065,7 @@ impl LanguageHooks for OldeEclHooks {
         // that one that disables the callstack
         match (self.game, opcode) {
             | (Game::Th06, 130)
+            | (Game::Th06NC, 130)
             | (Game::Th07, 130)
             | (Game::Th08, 151)
             | (Game::Th09, 151)
@@ -1075,7 +1077,7 @@ impl LanguageHooks for OldeEclHooks {
 
     fn difficulty_register(&self) -> Option<RegId> {
         match self.game {
-            Game::Th06 => Some(RegId(-10013)),
+            Game::Th06 | Game::Th06NC => Some(RegId(-10013)),
             Game::Th07 => Some(RegId(10016)),
             Game::Th08 => Some(RegId(10040)),
             Game::Th09 => Some(RegId(10040)),
@@ -1085,7 +1087,10 @@ impl LanguageHooks for OldeEclHooks {
     }
 
     fn has_auto_casts(&self) -> bool {
-        self.game != Game::Th06
+        match self.game {
+            Game::Th06 | Game::Th06NC => false,
+            _ => true
+        }
     }
 
     fn instr_format(&self) -> &dyn InstrFormat { self }
@@ -1107,7 +1112,7 @@ impl InstrFormat for OldeEclHooks {
                 message("unexpected nonzero byte before difficulty mask: {:#04X}", before_difficulty)
             )).ignore();
         }
-        if self.game == Game::Th06 && param_mask != 0xFF {
+        if (self.game == Game::Th06 || self.game == Game::Th06NC) && param_mask != 0xFF {
             emitter.as_sized().emit(warning!(
                 message("unexpected non-FF parameter mask in EoSD: {:#04X}", param_mask)
             )).ignore();
@@ -1136,7 +1141,7 @@ impl InstrFormat for OldeEclHooks {
         f.write_u8(0)?;
         f.write_u8(instr.difficulty)?;
         f.write_u16(match self.game {
-            Game::Th06 => 0x00FF,
+            Game::Th06 | Game::Th06NC => 0x00FF,
             _ => instr.param_mask as _,
         })?;
 

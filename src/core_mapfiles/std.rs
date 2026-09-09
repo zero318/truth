@@ -4,7 +4,7 @@ use crate::llir::IntrinsicInstrKind as IKind;
 
 pub(super) fn core_signatures(game: Game) -> &'static CoreSignatures {
     match game {
-        | Th06
+        | Th06 | Th06NC
         => STD_06,
 
         | Th07 | Th08 | Th09
